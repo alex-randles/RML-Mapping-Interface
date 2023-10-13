@@ -1,0 +1,13 @@
+@prefix ns1: <http://xmlns.com/foaf/0.1/> .
+
+<http://foo.example/Person/1> a ns1:Person ;
+    ns1:based_near <http://foo.example/city/1> ;
+    ns1:name "Christophe" .
+
+<http://foo.example/Person/2> a ns1:Person ;
+    ns1:name "Kevin" .
+
+<http://foo.example/city/1> a <http://dbpedia.org/ontology/Place> ;
+    ns1:name "Brussels" .
+
+

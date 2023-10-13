@@ -1,0 +1,9 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.com/resource/sport_100> rdfs:label "Tennis" .
+
+<http://example.com/resource/sport_200> rdfs:label "Soccer" .
+
+<http://example.com/resource/sport_300> rdfs:label "Badminton" .
+
+

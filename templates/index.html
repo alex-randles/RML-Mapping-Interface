@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1 class="text-center text-secondary mt-3">RML Mapping Engine</h1>
+<form class="text-center my-4" action="{{ url_for('index') }}" id="mapping-form" method="POST" enctype="multipart/form-data" >
+    <div class="form-group">
+        <div class="input-group mb-3 w-75 mx-auto">
+            <div class="input-group-prepend">
+                <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
+            </div>
+            <input class="form-control" type="file" name="mapping-file">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-group mb-3 w-75 mx-auto">
+            <div class="input-group-prepend">
+                <span class="input-group-text btn btn-secondary">Source Data</span>
+            </div>
+            <input class="form-control" type="file" name="source-data">
+        </div>
+    </div>
+    <button type="submit" id="search-button" class="btn btn-primary mt-3">Search</button>
+    <div class="spinner-border my-3" id="spinner" role="status" style="display:none;">
+    </div>
+</form>
+
+
+            {% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for msg in messages %}
+<div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
+    <h3 class="alert-heading fw-normal">Error</h3>
+    <h4>{{msg}}</h4>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<div id="search-results" style="display:none;">
+    <h3 class="px-2 text-decoration-underline">Results</h3>
+    <table id="search-results-table" class="table table-striped mx-auto">
+        <thead id="search-results-table-head">
+        <tr>
+            <th scope="col">#</th>
+        </tr>
+        </thead>
+        <tbody id="search-results-table-body">
+        </tbody>
+    </table>
+</div>
+
+<div id="search-result-message" class="text-center h3" style="display:none;"></div>
+
+
+</body>
+</html>
+
+<script>
+    var sparql_endpoints = {
+        "VRTI": "https://blazegraph.virtualtreasury.ie/blazegraph/namespace/b2022/sparql",
+        "DBpedia": "https://dbpedia.org/sparql",
+        "Wikidata": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+    };
+    $(".select-sparql-endpoint").change(function(){
+        var selected_endpoint = $(this).val();
+        if (!selected_endpoint) {
+           $("#graph-uri").val("")
+        }
+        var endpoint_uri = sparql_endpoints[selected_endpoint];
+        if (endpoint_uri) {
+           $("#graph-uri").val(endpoint_uri)
+        }
+        else {
+           $("#graph-uri").val()
+        }
+    });
+
+    $(document).on('submit','#search-form',function(e){
+      e.preventDefault();
+      $("#search-result-message").hide();
+      $("#search-results").hide();
+      $("#search-button").hide();
+      $("#spinner").show();
+      var refreshed_table = `
+        <thead id="search-results-table-head">
+        <tr>
+            <th scope="col">#</th>
+        </tr>
+        </thead>
+            <tbody id="search-results-table-body">
+        </tbody>
+       `;
+      $("#search-results-table").html(refreshed_table);
+      $.ajax({
+        type:'POST',
+        url:'{{ url_for('search_graph') }}',
+        data:{
+            query_parameter:$('#query-parameter').val(),
+            graph_uri:$('#graph-uri').val(),
+        },
+        success:function(response)
+        {
+            if (typeof response == "string") {
+                $("#search-result-message").html("Query could not be executed on endpoint").show();
+                $("#spinner").hide();
+                $("#search-button").show();
+                return false;
+            }
+            if (jQuery.isEmptyObject(response)) {
+                $("#search-result-message").text("No results from SPARQL Query").show();
+                $("#spinner").hide();
+                $("#search-button").show();
+                return false;
+            }
+            var dict_keys = Object.keys(response[0]);
+            $.each(dict_keys, function (i, v) {
+               $('#search-results-table >thead tr').append('<th>' + v + '</th>');
+            });
+            var result_counter  = 0;
+            $.each(response, function (i, v) {
+              // console.log(i);
+              // console.log(v);
+              var new_table_row = '<th scope="row">' + result_counter + '</th>';
+              $.each(v, function (idx, val) {
+                 console.log(idx);
+                 console.log(val);
+                 if (!val.startsWith("http")) {
+                     new_table_row = new_table_row + "<td>" + val + "</td>";
+                 }
+                 else {
+                      new_table_row = new_table_row + "<td><a href='" + val + "'>" + getSuffix(val) + "</td>";
+                 }
+              });
+              $('#search-results-table tr:last').after('<tr>' + new_table_row + '</tr>');
+              result_counter = result_counter + 1;
+            });
+            $("#search-results").show();
+            $("#spinner").hide();
+            $("#search-button").show();
+
+        }
+      });
+    });
+
+    function getSuffix(text) {
+        if (text.indexOf("#") != -1) {
+           var seperator = "#";
+        } else {
+           var seperator = "/";
+        }
+        if (text) {
+            text = text.toString();
+            text = text.split(seperator)[text.split(seperator).length - 1]
+            return text;
+        } else {
+            return text;
+        }
+    }
+</script>

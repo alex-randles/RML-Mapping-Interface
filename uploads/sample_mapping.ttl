@@ -1,0 +1,29 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix ex: <http://example.com/ns#>.
+@prefix prov: <http://www.w3.org/ns/prov#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix shacl: <http://www.w3.org/ns/shacl#>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix dqv: <http://www.w3.org/ns/dqv#>.
+@prefix dct: <http://www.w3.org/ns/dcat#>.
+@prefix geo: <http://www.opengis.net/ont/geosparql#>.
+@prefix lode: <http://linkedevents.org/ontology/>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+
+<#TriplesMap1>
+    rr:logicalTable [ rr:tableName "EMP" ];
+    rr:subjectMap [
+        rr:template "http://data.example.com/employee/{EMPNO}";
+    ];
+    rr:predicateObjectMap [
+#        rr:predicate owl:disjointWith, xsd:string, rdfs:label, rml:source, skos:Concept, skos:example, skos:note, owl:Class, foaf:knows, foaf:Person, rdfs:comment, lode:atTime, rr:template, geo:within, dqv:inCategory, geo:Feature, foaf:name,  foaf:Document,  foaf:Agent, dqv:Category, prov:wasAssociatedWith,prov:Agent, prov:Entity, dc:creator, rdfs:Resource, foaf:mbox, prov:atLocation, dc:contributor, dqv:Metric;
+        rr:predicate owl:disjointWith, geo:hasMetricSize,  prov:generatedAtTime, skos:Concept, skos:example, rdfs:Class, owl:Class, foaf:knows, foaf:Person, rdfs:comment;
+        rr:objectMap [ rr:column "ENAME" ];
+    ]
+
+.

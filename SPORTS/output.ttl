@@ -1,0 +1,25 @@
+@prefix ns1: <http://xmlns.com/foaf/0.1/> .
+@prefix ns2: <http://example.com/ontology/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.com/resource/student_10> ns2:practises <http://example.com/resource/sport_100> ;
+    ns1:name "Paul Williams" .
+
+<http://example.com/resource/student_20> ns1:name "Jane Moore" .
+
+<http://example.com/resource/student_35> ns2:practises <http://example.com/resource/sport_200> ;
+    ns1:name "Fred Perry" .
+
+<http://example.com/resource/student_48> ns2:practises <http://example.com/resource/sport_200> ;
+    ns1:name "Ronan Keating" .
+
+<http://example.com/resource/student_90> ns2:practises <http://example.com/resource/sport_300> ;
+    ns1:name "Patricia Knight" .
+
+<http://example.com/resource/sport_100> rdfs:label "Tennis" .
+
+<http://example.com/resource/sport_300> rdfs:label "Badminton" .
+
+<http://example.com/resource/sport_200> rdfs:label "Soccer" .
+
+
