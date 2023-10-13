@@ -8,51 +8,72 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 </head>
 <body>
-<h1 class="text-center text-secondary mt-3">RML Mapping Engine</h1>
-<form class="text-center my-4" action="{{ url_for('index') }}" id="mapping-form" method="POST" enctype="multipart/form-data" >
-    <div class="form-group">
-        <div class="input-group mb-3 w-75 mx-auto">
-            <div class="input-group-prepend">
-                <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
+
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="text-center text-secondary mt-3">RML Mapping Engine</h1>
+    </div>
+    <div class="row text-center">
+        <p class="text-muted">Start Generating RDF Data by uploading an RML Mapping and associated Source Data</p>
+    </div>
+
+    <form class="text-center my-1" action="{{ url_for('index') }}" id="mapping-form" method="POST" enctype="multipart/form-data" >
+        <div class="row">
+            <div class="form-group">
+                <div class="input-group mb-3 w-75 mx-auto">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
+                    </div>
+                    <input class="form-control" type="file" name="mapping-file">
+                </div>
             </div>
-            <input class="form-control" type="file" name="mapping-file">
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="input-group mb-3 w-75 mx-auto">
-            <div class="input-group-prepend">
-                <span class="input-group-text btn btn-secondary">Source Data</span>
+            <div class="form-group">
+                <div class="input-group mb-3 w-75 mx-auto">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text btn btn-secondary">Source Data</span>
+                    </div>
+                    <input class="form-control" type="file" name="source-data" multiple>
+                </div>
             </div>
-            <input class="form-control" type="file" name="source-data" multiple>
         </div>
-    </div>
-    <div class="mt-5">
-        <h6 class="text-decoration-underline fw-bold">Guidelines</h6>
-        <ul>
-            <li>Ensure that no directory is defined in the mapping source name</li>
-        </ul>
-    </div>
-    <button type="button" class="btn btn-secondary btn-sm mt-3 float-start clear-button">Clear Uploads</button>
-    <button type="submit" id="search-button" class="btn btn-primary mt-3">Execute</button>
-    <div class="spinner-border my-3" id="spinner" role="status" style="display:none;">
-    </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <h6 class="text-decoration-underline fw-bold">Guidelines</h6>
+                <ul style="list-style-position: inside;">
+                    <li>Ensure that no directory is defined in the mapping source data name</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col-12">
+                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:13%;">Clear Uploads</button>
+                <button type="submit" id="search-button" class="btn btn-primary" style="margin-right:18%;">Execute</button>
+            </div>
+        </div>
+</div>
 </form>
+</div>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for msg in messages %}
 <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
+    <h3 class="alert-heading fw-normal">Error</h3>
     {% if "Bad syntax" in msg %}
     <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
     {% elif "'object_map'" == msg %}
-    <h6>Mapping does not follow <a href="https://rml.io/specs/rml/">RML Specification</a></h6>
+    <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
+    {% elif "No such file" in msg %}
+    <h6>Source data stated below was not uploaded!</h6>
     {% endif %}
-    <h3 class="alert-heading fw-normal">Error</h3>
     <p>{{msg}}</p>
 </div>
 {% endfor %}
 {% endif %}
 {% endwith %}
+
+
+</div>
 
 
 <div id="search-results" style="display:none;">
@@ -77,115 +98,11 @@
 
 <script>
     $('.clear-button').click(function(){
-           $('#mapping-form')[0].reset();
+       $('#mapping-form')[0].reset();
     });
 </script>
-
 <script>
-    var sparql_endpoints = {
-        "VRTI": "https://blazegraph.virtualtreasury.ie/blazegraph/namespace/b2022/sparql",
-        "DBpedia": "https://dbpedia.org/sparql",
-        "Wikidata": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-    };
-    $(".select-sparql-endpoint").change(function(){
-        var selected_endpoint = $(this).val();
-        if (!selected_endpoint) {
-           $("#graph-uri").val("")
-        }
-        var endpoint_uri = sparql_endpoints[selected_endpoint];
-        if (endpoint_uri) {
-           $("#graph-uri").val(endpoint_uri)
-        }
-        else {
-           $("#graph-uri").val()
-        }
+    $(document).ready(function() {
+      // $('#mapping-form')[0].reset();
     });
-
-    $(document).on('submit','#search-form',function(e){
-      e.preventDefault();
-      $("#search-result-message").hide();
-      $("#search-results").hide();
-      $("#search-button").hide();
-      $("#spinner").show();
-      var refreshed_table = `
-        <thead id="search-results-table-head">
-        <tr>
-            <th scope="col">#</th>
-        </tr>
-        </thead>
-            <tbody id="search-results-table-body">
-        </tbody>
-       `;
-      $("#search-results-table").html(refreshed_table);
-      $.ajax({
-        type:'POST',
-        url:'{{ url_for('search_graph') }}',
-        data:{
-            query_parameter:$('#query-parameter').val(),
-            graph_uri:$('#graph-uri').val(),
-        },
-        success:function(response)
-        {
-            if (typeof response == "string") {
-                $("#search-result-message").html("Query could not be executed on endpoint").show();
-                $("#spinner").hide();
-                $("#search-button").show();
-                return false;
-            }
-            if (jQuery.isEmptyObject(response)) {
-                $("#search-result-message").text("No results from SPARQL Query").show();
-                $("#spinner").hide();
-                $("#search-button").show();
-                return false;
-            }
-            var dict_keys = Object.keys(response[0]);
-            $.each(dict_keys, function (i, v) {
-               $('#search-results-table >thead tr').append('<th>' + v + '</th>');
-            });
-            var result_counter  = 0;
-            $.each(response, function (i, v) {
-              // console.log(i);
-              // console.log(v);
-              var new_table_row = '<th scope="row">' + result_counter + '</th>';
-              $.each(v, function (idx, val) {
-                 console.log(idx);
-                 console.log(val);
-                 if (!val.startsWith("http")) {
-                     new_table_row = new_table_row + "<td>" + val + "</td>";
-                 }
-                 else {
-                      new_table_row = new_table_row + "<td><a href='" + val + "'>" + getSuffix(val) + "</td>";
-                 }
-              });
-              $('#search-results-table tr:last').after('<tr>' + new_table_row + '</tr>');
-              result_counter = result_counter + 1;
-            });
-            $("#search-results").show();
-            $("#spinner").hide();
-            $("#search-button").show();
-
-        }
-      });
-    });
-
-    function getSuffix(text) {
-        if (text.indexOf("#") != -1) {
-           var seperator = "#";
-        } else {
-           var seperator = "/";
-        }
-        if (text) {
-            text = text.toString();
-            text = text.split(seperator)[text.split(seperator).length - 1]
-            return text;
-        } else {
-            return text;
-        }
-    }
-</script>
-<script>
-    $(document).on("load", function(){
-      alert("sjsjjs");
-    });
-
 </script>
