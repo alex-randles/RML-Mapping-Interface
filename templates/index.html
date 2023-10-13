@@ -27,9 +27,9 @@
         </div>
     </div>
     <div class="mt-5">
-<!--        <h6>Check the following before executing the mapping</h6>-->
+        <h6 class="text-decoration-underline fw-bold">Guidelines</h6>
         <ul>
-            <li class="fw-bold">Ensure that no directory is defined in the mapping source name</li>
+            <li>Ensure that no directory is defined in the mapping source name</li>
         </ul>
     </div>
     <button type="button" class="btn btn-secondary btn-sm mt-3 float-start clear-button">Clear Uploads</button>
@@ -42,6 +42,11 @@
 {% if messages %}
 {% for msg in messages %}
 <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
+    {% if "Bad syntax" in msg %}
+    <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
+    {% elif "'object_map'" == msg %}
+    <h6>Mapping does not follow <a href="https://rml.io/specs/rml/">RML Specification</a></h6>
+    {% endif %}
     <h3 class="alert-heading fw-normal">Error</h3>
     <p>{{msg}}</p>
 </div>
@@ -177,4 +182,10 @@
             return text;
         }
     }
+</script>
+<script>
+    $(document).on("load", function(){
+      alert("sjsjjs");
+    });
+
 </script>

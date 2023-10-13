@@ -3,6 +3,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from flask import Flask, render_template, request, flash, redirect
 from werkzeug.utils import secure_filename
 import morph_kgc
+import rdflib
 
 
 app = Flask(__name__)
@@ -28,7 +29,7 @@ def index():
         mapping_filename = secure_filename(mapping_file.filename)
         # source_filename = secure_filename(source_data_file.filename)
         if mapping_filename == '':
-            flash('No mapping or source data file uploaded! Both are required to execute the mapping')
+            flash('Please upload a Mapping File!')
             return redirect(request.url)
         if not mapping_filename.endswith(".ttl"):
             flash('Mapping file must be a Turtle file (.ttl)')
@@ -44,6 +45,7 @@ def index():
         print(rdf_generated)
         if mapping_error:
             flash(mapping_error)
+            print(mapping_error)
             return redirect(request.url)
         return render_template("results.html",
                                rdf_generated=rdf_generated)
@@ -64,6 +66,7 @@ def execute_mapping(mapping_filename):
             results["rdf_data"] = g.serialize(format="turtle").strip()
     except Exception as e:
         results["error_message"] = str(e)
+        print(e)
     os.chdir("..")
     return results
 
