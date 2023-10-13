@@ -14,44 +14,60 @@ def index():
     if request.method == "GET":
         return render_template("index.html")
     else:
-        if os.getcwd().endswith("uploads"):
-            os.chdir("..")
         mapping_file = request.files.get("mapping-file")
-        source_data_file = request.files.get("source-data")
+        # source_data_file = request.files.get("source-data")
+        files = request.files.getlist("source-data")
+        source_files = []
+        for file in files:
+            source_filename = file.filename
+            if source_filename:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
+                source_files.append(source_filename)
+        # exit()
         # print(file)
-        if mapping_file.filename == '' or source_data_file.filename == '':
+        mapping_filename = secure_filename(mapping_file.filename)
+        # source_filename = secure_filename(source_data_file.filename)
+        if mapping_filename == '':
             flash('No mapping or source data file uploaded! Both are required to execute the mapping')
             return redirect(request.url)
-        mapping_filename = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(mapping_file.filename))
-        mapping_filename = secure_filename(mapping_file.filename)
-        mapping_file.save(mapping_filename)
-        source_filename = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(source_data_file.filename))
-        source_data_file.save(source_filename)
-        rdf_generated = execute_mapping(mapping_filename, source_filename)
-        flash("jshshss")
+        if not mapping_filename.endswith(".ttl"):
+            flash('Mapping file must be a Turtle file (.ttl)')
+            return redirect(request.url)
+        mapping_file.save(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
+        # source_data_file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
+        mapping_result = execute_mapping(mapping_filename)
+        rdf_generated = mapping_result.get("rdf_data")
+        mapping_error = mapping_result.get("error_message")
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
+        for file in source_files:
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
         print(rdf_generated)
+        if mapping_error:
+            flash(mapping_error)
+            return redirect(request.url)
         return render_template("results.html",
                                rdf_generated=rdf_generated)
 
-def execute_mapping(mapping_filename, source_filename):
-    # generate the triples and load them to an RDFLib graph
-    mapping_file = "./SPORTS/mapping.ttl"
+
+def execute_mapping(mapping_filename):
     output_file = "output.ttl"
     config = f"""
                 [DataSource1]
                 mappings: {mapping_filename}
              """
     os.chdir("./uploads")
-    # print(os.getcwd())
-    # exit()
-    # print(config)
-    # exit()
-    g = morph_kgc.materialize(config)
+    results = {}
+    try:
+        g = morph_kgc.materialize(config)
+        with open(output_file, "w") as f:
+            print(g.serialize(format="turtle"), file=f)
+            results["rdf_data"] = g.serialize(format="turtle").strip()
+    except Exception as e:
+        results["error_message"] = str(e)
+    os.chdir("..")
+    return results
 
-    # work with the RDFLib graph
-    with open(output_file, "w") as f:
-        print(g.serialize(format="turtle"), file=f)
-        return g.serialize(format="turtle")
+
 
 @app.route('/search-graph', methods=["GET", "POST"])
 def search_graph():

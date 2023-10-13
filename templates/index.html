@@ -23,21 +23,27 @@
             <div class="input-group-prepend">
                 <span class="input-group-text btn btn-secondary">Source Data</span>
             </div>
-            <input class="form-control" type="file" name="source-data">
+            <input class="form-control" type="file" name="source-data" multiple>
         </div>
     </div>
-    <button type="submit" id="search-button" class="btn btn-primary mt-3">Search</button>
+    <div class="mt-5">
+<!--        <h6>Check the following before executing the mapping</h6>-->
+        <ul>
+            <li class="fw-bold">Ensure that no directory is defined in the mapping source name</li>
+        </ul>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm mt-3 float-start clear-button">Clear Uploads</button>
+    <button type="submit" id="search-button" class="btn btn-primary mt-3">Execute</button>
     <div class="spinner-border my-3" id="spinner" role="status" style="display:none;">
     </div>
 </form>
 
-
-            {% with messages = get_flashed_messages() %}
+{% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for msg in messages %}
 <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
     <h3 class="alert-heading fw-normal">Error</h3>
-    <h4>{{msg}}</h4>
+    <p>{{msg}}</p>
 </div>
 {% endfor %}
 {% endif %}
@@ -62,6 +68,13 @@
 
 </body>
 </html>
+
+
+<script>
+    $('.clear-button').click(function(){
+           $('#mapping-form')[0].reset();
+    });
+</script>
 
 <script>
     var sparql_endpoints = {

@@ -20,3 +20,25 @@
 		rr:predicate foaf:name ;
 		rr:objectMap [ rml:reference "cities"; rr:TermType rr:IRI; ]
 	]. 
+
+
+<PersonTriplesMap> a rr:TriplesMap;
+	rml:logicalSource [
+		rml:source "People.csv";
+		rml:referenceForumulation ql:CSV] ;
+	rr:subjectMap [
+		rr:template "http://foo.example/Person/{ID}" ;
+		rr:class foaf:Person ;
+	] ;
+	rr:predicateObjectMap [
+		rr:predicate foaf:name ;
+		rr:objectMap [ rml:reference "fname"; rr:TermType rr:IRI; ]
+	] ;
+	rr:predicateObjectMap [
+		rr:predicate foaf:based_near ;
+		rr:objectMap [
+			a rr:RefObjectMap ;
+			rr:parentTriplesMap <AddressTriplesMap> ;
+			rr:joinCondition [ rr:child "addr" ; rr:parent "ID"; ]
+		]
+	]. 

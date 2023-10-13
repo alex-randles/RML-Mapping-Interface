@@ -8,6 +8,33 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://example.com/base/> .
 
+<TriplesMap1>
+  a rr:TriplesMap;
+
+  rml:logicalSource [ 
+    rml:source "student.csv";
+    rml:referenceFormulation ql:CSV
+  ];
+
+  rr:subjectMap [ rr:template "http://example.com/resource/student_{ID}" ];
+	
+  rr:predicateObjectMap [ 
+    rr:predicate foaf:name ;
+    rr:objectMap [ rml:reference "Name" ]
+  ] ;
+
+  rr:predicateObjectMap [ 
+    rr:predicate <http://example.com/ontology/practises> ;
+    rr:objectMap [ 
+      a rr:RefObjectMap ;
+      rr:parentTriplesMap <TriplesMap2>;
+      rr:joinCondition [
+        rr:child "Sport" ;
+        rr:parent "ID" ;
+      ]
+    ]
+  ] .
+
 <TriplesMap2>
   a rr:TriplesMap;
 		

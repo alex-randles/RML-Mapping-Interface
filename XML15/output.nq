@@ -1,0 +1,9 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.com/BO> rdfs:label "Bolivia, Plurinational State of"@en,
+        "Estado Plurinacional de Bolivia"@es .
+
+<http://example.com/IE> rdfs:label "Ireland"@en,
+        "Irlanda"@es .
+
+
