@@ -46,6 +46,6 @@
   rr:subjectMap [ rr:template "http://example.com/resource/sport_{ID}" ]; 
 	
   rr:predicateObjectMap [ 
-    rr:predicate rdfs:label ; 
+    rr:predicate rdfs:labelss ;
     rr:objectMap [ rml:reference "Name" ];
   ].

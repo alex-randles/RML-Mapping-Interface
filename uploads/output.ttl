@@ -1,46 +1,25 @@
-@prefix ns1: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix ns2: <http://www.opengis.net/ont/geosparql#> .
-@prefix ns3: <http://www.example.org/ont#> .
+@prefix ns1: <http://example.com/ontology/> .
+@prefix ns2: <http://xmlns.com/foaf/0.1/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://data.example.org/ws/Dublin%20Airport> a ns3:WeatherStation,
-        ns2:Feature ;
-    rdfs:label "Dublin Airport",
-        "Dublin Airport"@en ;
-    ns3:withWeatherReading <http://www.met.ie/latest/reports.asp> ;
-    ns2:hasGeometry <http://data.example.org/geom/-6.29784754004026/53.4215060785623> ;
-    rdfs:seeAlso <http://www.met.ie/latest/reports.asp> ;
-    ns1:lat 5.342151e+01 ;
-    ns1:long -6.297848e+00 .
+<http://example.com/resource/student_10> ns1:practises <http://example.com/resource/sport_100> ;
+    ns2:name "Paul Williams" .
 
-<http://data.example.org/ws/M50%20Blanchardstown> a ns3:WeatherStation,
-        ns2:Feature ;
-    rdfs:label "M50 Blanchardstown",
-        "M50 Blanchardstown"@en ;
-    ns3:withWeatherReading <http://www.nratraffic.ie/weather/default.asp?weatherstation=IR26&selected=true&showonly=true> ;
-    ns2:hasGeometry <http://data.example.org/geom/-6.38085144711153/53.3704660326011> ;
-    rdfs:seeAlso <http://www.nratraffic.ie/weather/default.asp?weatherstation=IR26&selected=true&showonly=true> ;
-    ns1:lat 5.337047e+01 ;
-    ns1:long -6.380851e+00 .
+<http://example.com/resource/student_20> ns2:name "Jane Moore" .
 
-<http://data.example.org/ws/M50%20Dublin%20Airport> a ns3:WeatherStation,
-        ns2:Feature ;
-    rdfs:label "M50 Dublin Airport",
-        "M50 Dublin Airport"@en ;
-    ns3:withWeatherReading <http://www.nratraffic.ie/weather/default.asp?weatherstation=IR57&selected=true&showonly=true> ;
-    ns2:hasGeometry <http://data.example.org/geom/-6.22759742761812/53.4096411069945> ;
-    rdfs:seeAlso <http://www.nratraffic.ie/weather/default.asp?weatherstation=IR57&selected=true&showonly=true> ;
-    ns1:lat 5.340964e+01 ;
-    ns1:long -6.227597e+00 .
+<http://example.com/resource/student_35> ns1:practises <http://example.com/resource/sport_200> ;
+    ns2:name "Fred Perry" .
 
-<http://data.example.org/geom/-6.22759742761812/53.4096411069945> a ns2:Geometry ;
-    ns2:asWKT "POINT(-6.22759742761812 53.4096411069945)"^^ns2:wktLiteral .
+<http://example.com/resource/student_48> ns1:practises <http://example.com/resource/sport_200> ;
+    ns2:name "Ronan Keating" .
 
-<http://data.example.org/geom/-6.29784754004026/53.4215060785623> a ns2:Geometry ;
-    ns2:asWKT "POINT(-6.29784754004026 53.4215060785623)"^^ns2:wktLiteral .
+<http://example.com/resource/student_90> ns1:practises <http://example.com/resource/sport_300> ;
+    ns2:name "Patricia Knight" .
 
-<http://data.example.org/geom/-6.38085144711153/53.3704660326011> a ns2:Geometry ;
-    ns2:asWKT "POINT(-6.38085144711153 53.3704660326011)"^^ns2:wktLiteral .
+<http://example.com/resource/sport_100> rdfs:labelss "Tennis" .
+
+<http://example.com/resource/sport_300> rdfs:labelss "Badminton" .
+
+<http://example.com/resource/sport_200> rdfs:labelss "Soccer" .
 
 

@@ -10,13 +10,12 @@
 <body>
 
 <div class="container-fluid">
-    <div class="row">
-        <h1 class="text-center text-secondary mt-3">RML Mapping Engine</h1>
+    <div class="row" style="background-color:#F8F8F8;">
+        <h1 class="text-center text-dark mt-2">RML Mapping Engine</h1>
     </div>
     <div class="row text-center">
         <p class="text-muted">Start Generating RDF Data by uploading an RML Mapping and associated Source Data</p>
     </div>
-
     <form class="text-center my-1" action="{{ url_for('index') }}" id="mapping-form" method="POST" enctype="multipart/form-data" >
         <div class="row">
             <div class="form-group">
@@ -46,11 +45,10 @@
         </div>
         <div class="row my-4">
             <div class="col-12">
-                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:13%;">Clear Uploads</button>
-                <button type="submit" id="search-button" class="btn btn-primary" style="margin-right:18%;">Execute</button>
+                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">Clear Uploads</button>
+                <button type="submit" id="search-button" class="btn btn-primary spinner-button" style="margin-right:18%;">Execute</button>
             </div>
         </div>
-</div>
 </form>
 </div>
 
@@ -95,7 +93,13 @@
 </body>
 </html>
 
-
+<script>
+    $(document.body).on('click', '.spinner-button' ,function(e){
+          $(this).css("pointer-events", "none");
+          $(this).text("");
+          $(this).attr("class", "spinner-border");
+    });
+</script>
 <script>
     $('.clear-button').click(function(){
        $('#mapping-form')[0].reset();
