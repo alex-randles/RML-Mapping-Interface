@@ -59,7 +59,7 @@
     <h3 class="alert-heading fw-normal">Error</h3>
     {% if "Bad syntax" in msg %}
     <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
-    {% elif "'object_map'" == msg %}
+    {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
     <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
     {% elif "No such file" in msg %}
     <h6>Source data stated below was not uploaded!</h6>
