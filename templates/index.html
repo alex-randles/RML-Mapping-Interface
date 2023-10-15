@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='homepage_favicon.ico') }}">
 </head>
 <body>
 
@@ -16,6 +17,7 @@
     <div class="row text-center">
         <p class="text-muted">Start Generating RDF Data by uploading an RML Mapping and associated Source Data</p>
     </div>
+
     <form class="text-center my-1" action="{{ url_for('index') }}" id="mapping-form" method="POST" enctype="multipart/form-data" >
         <div class="row">
             <div class="form-group">
@@ -23,7 +25,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
                     </div>
-                    <input class="form-control" type="file" name="mapping-file">
+                    <input class="form-control" type="file" name="mapping-file" id="mapping-file">
                 </div>
             </div>
             <div class="form-group">
@@ -31,7 +33,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">Source Data</span>
                     </div>
-                    <input class="form-control" type="file" name="source-data" multiple>
+                    <input class="form-control" type="file" name="source-data" id="source-data" multiple>
                 </div>
             </div>
         </div>
@@ -46,11 +48,10 @@
         <div class="row my-4">
             <div class="col-12">
                 <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">Clear Uploads</button>
-                <button type="submit" id="search-button" class="btn btn-primary spinner-button" style="margin-right:18%;">Execute</button>
+                <button type="submit" id="submit-button" class="btn btn-primary spinner-button" style="margin-right:18%;">Execute</button>
             </div>
         </div>
 </form>
-</div>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -62,13 +63,20 @@
     {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
     <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
     {% elif "No such file" in msg %}
-    <h6>Source data stated below was not uploaded!</h6>
+<!--    <h6>Source data stated below was not uploaded!</h6>-->
+    <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
     {% endif %}
-    <p>{{msg}}</p>
+    <p>{{msg | safe}}</p>
 </div>
 {% endfor %}
 {% endif %}
 {% endwith %}
+
+<div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert" id="alert-div" style="display:none;">
+    <h3 class="alert-heading fw-normal">Error</h3>
+    <h6 id="alert-message">Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
+
+</div>
 
 
 </div>
@@ -93,6 +101,34 @@
 </body>
 </html>
 
+
+<script>
+    $(document).on('submit','#mapping-formss',function(e) {
+        e.preventDefault();
+        $("#alert-div").hide();
+        var form_data = new FormData();
+        form_data.append('mapping-file', $('#mapping-file').prop('files')[0]);
+        form_data.append('source-data', $('#source-data').prop('files')[0]);
+        $.ajax({
+                type: 'POST',
+                url: '{{ url_for("index") }}',
+                data: form_data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function(response) {
+                   // if ("html" in response) {
+                       location.href = 'result';
+                       //  document.write(response["html"]);
+                  //  } else {
+                        $("#submit-button").attr("class", "btn btn-primary spinner-button").text("Execute");
+                        $("#alert-message").text(response);
+                        $("#alert-div").show();
+                   // }
+                },
+            });
+    });
+</script>
 <script>
     $(document.body).on('click', '.spinner-button' ,function(e){
           $(this).css("pointer-events", "none");

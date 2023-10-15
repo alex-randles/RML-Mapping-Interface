@@ -58,7 +58,7 @@
 		rr:predicate geo:hasGeometry ;
 		rr:objectMap [
 			# A mapping with incorrect semantics
-			rr:parentTriplesMap <Geometriesssss>;
+			rr:parentTriplesMap <Geometries>;
 			rr:joinCondition [
 				rr:child "Name" ;
 				rr:parent "Name" ;
