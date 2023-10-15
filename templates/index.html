@@ -9,7 +9,6 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='homepage_favicon.ico') }}">
 </head>
 <body>
-
 <div class="container-fluid">
     <div class="row" style="background-color:#F8F8F8;">
         <h1 class="text-center text-dark mt-2">RML Mapping Engine</h1>
@@ -25,7 +24,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
                     </div>
-                    <input class="form-control" type="file" name="mapping-file" id="mapping-file">
+                    <input class="form-control" type="file" name="mapping-file" id="mapping-file" accept="text/turtle" required>
                 </div>
             </div>
             <div class="form-group">
@@ -33,7 +32,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">Source Data</span>
                     </div>
-                    <input class="form-control" type="file" name="source-data" id="source-data" multiple>
+                    <input class="form-control" type="file" name="source-data" id="source-data" accept="text/csv, text/json, text/xml, text/x" multiple>
                 </div>
             </div>
         </div>

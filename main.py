@@ -1,5 +1,4 @@
 import os
-from SPARQLWrapper import SPARQLWrapper, JSON
 from flask import Flask, render_template, request, flash, redirect
 from werkzeug.utils import secure_filename
 import morph_kgc
@@ -14,7 +13,7 @@ app.config['UPLOAD_FOLDER'] = "uploads"
 def index():
     # the main endpoint for the interface
     if request.method == "GET":
-        # returns the view first seen
+        # returns the initial view
         return render_template("index.html")
     else:
         # returns the result page of the mapping process
@@ -51,6 +50,7 @@ def index():
         for file in source_files:
             pass
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
+        # check if any source files defined in mapping were not uploaded
         if file_errors:
             # join returned list of source files not uploaded and create a HTML list to display
             file_listing = "<ul>"
@@ -67,11 +67,13 @@ def index():
         return render_template("results.html",
                                rdf_generated=rdf_generated)
 
+
 def compare_mapping_sources(mapping_filename, uploaded_sources):
     # compares each mapping source to uploaded source files
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename)
     mapping_graph = rdflib.Graph().parse(file_path, format="ttl")
     query = """
+    PREFIX rml: <http://w3id.org/rml/>
     SELECT DISTINCT ?sourceName
     WHERE { 
         ?subject rml:source ?sourceName . 
