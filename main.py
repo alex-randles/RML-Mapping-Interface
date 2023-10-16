@@ -5,21 +5,24 @@ import morph_kgc
 import rdflib
 
 
+# definition of web application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "x633UE2xYRC"
 app.config['UPLOAD_FOLDER'] = "uploads"
 
+
+# the main endpoint for the interface
 @app.route('/', methods=["GET", "POST"])
 def index():
-    # the main endpoint for the interface
     if request.method == "GET":
-        # returns the initial view
+        # returns the initial view displayed
         return render_template("index.html")
     else:
         # returns the result page of the mapping process
         mapping_file = request.files.get("mapping-file")
         # source_data_file = request.files.get("source-data")
         mapping_filename = secure_filename(mapping_file.filename)
+        print(mapping_filename)
         # check mapping is uploaded and is a turtle file
         if mapping_filename == '':
             flash('Please upload a Mapping File!')
@@ -43,8 +46,8 @@ def index():
         mapping_result = execute_mapping(mapping_filename)
         rdf_generated = mapping_result.get("rdf_data")
         mapping_error = mapping_result.get("error_message")
-        print(rdf_generated)
-        print(mapping_error)
+        print(f"RDF Generated: \n{rdf_generated}")
+        print(f"Mapping Engine Error: \n{mapping_error}")
         # remove the files from server
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
         for file in source_files:
@@ -73,11 +76,11 @@ def compare_mapping_sources(mapping_filename, uploaded_sources):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename)
     mapping_graph = rdflib.Graph().parse(file_path, format="ttl")
     query = """
-    PREFIX rml: <http://w3id.org/rml/>
+    PREFIX rml: <http://semweb.mmlab.be/ns/rml#>
     SELECT DISTINCT ?sourceName
     WHERE { 
         ?subject rml:source ?sourceName . 
-        FILTER(isLiteral(?sourceName)) 
+        # FILTER(isLiteral(?sourceName)) 
     }
     """
     query_results = mapping_graph.query(query)
@@ -94,15 +97,17 @@ def compare_mapping_sources(mapping_filename, uploaded_sources):
     return file_error_message
 
 
+# run the uploaded mapping
 def execute_mapping(mapping_filename):
-    # creates the config string and executes the morph kgc engine and outputs.ttl
-    output_file = "output.ttl"
+    # create the config string and execute the morph kgc engine and save output
     config = f"""
                 [DataSource1]
                 mappings: {mapping_filename}
              """
+    output_file = "output.ttl"
     os.chdir("uploads")
     results = {}
+    # try/catch the execution of the mapping engine
     try:
         g = morph_kgc.materialize(config)
         with open(output_file, "w") as f:
@@ -116,4 +121,5 @@ def execute_mapping(mapping_filename):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    # start the web application
+    app.run(debug=True, host="127.0.0.1", port=5000, threaded=True)

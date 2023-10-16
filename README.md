@@ -19,7 +19,7 @@ The application can be started using the following command: `python3 main.py`
 
 The interface of the application will run on localhost port 5000 by default [127.0.0.1:5000](http://127.0.0.1:5000).
 
-The port can be configured on line 117 of `main.py` by changing the respective variable `app.run(debug=True, host="127.0.0.1", port=5000)`
+The port can be configured on line 125 of `main.py` by changing the respective variable `app.run(debug=True, host="127.0.0.1", port=5000, threaded=True)`
 
 ### Sample Mappings 
 Sample Mappings and Data sources can be found in the  [/Sample-Mappings](./Sample-Mappings) directory. 

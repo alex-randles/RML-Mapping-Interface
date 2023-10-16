@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>RML Mapper - Home</title>
+<!--    import bootstrap and jQuery -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='homepage_favicon.ico') }}">
 </head>
 <body>
+<!--container for upload form fields -->
 <div class="container-fluid">
     <div class="row" style="background-color:#F8F8F8;">
         <h1 class="text-center text-dark mt-2">RML Mapping Engine</h1>
     </div>
-    <div class="row text-center">
+    <div class="row text-center mt-3">
         <p class="text-muted">Start Generating RDF Data by uploading an RML Mapping and associated Source Data</p>
     </div>
 
@@ -24,7 +26,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
                     </div>
-                    <input class="form-control" type="file" name="mapping-file" id="mapping-file" accept="text/turtle" required>
+                    <input class="form-control" type="file" name="mapping-file" id="mapping-file" accept="text/turtle">
                 </div>
             </div>
             <div class="form-group">
@@ -52,6 +54,7 @@
         </div>
 </form>
 
+<!--display debugging information depending on error detected by Morph-KGC-->
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for msg in messages %}
@@ -71,77 +74,21 @@
 {% endif %}
 {% endwith %}
 
-<div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert" id="alert-div" style="display:none;">
-    <h3 class="alert-heading fw-normal">Error</h3>
-    <h6 id="alert-message">Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
-
 </div>
-
-
-</div>
-
-
-<div id="search-results" style="display:none;">
-    <h3 class="px-2 text-decoration-underline">Results</h3>
-    <table id="search-results-table" class="table table-striped mx-auto">
-        <thead id="search-results-table-head">
-        <tr>
-            <th scope="col">#</th>
-        </tr>
-        </thead>
-        <tbody id="search-results-table-body">
-        </tbody>
-    </table>
-</div>
-
-<div id="search-result-message" class="text-center h3" style="display:none;"></div>
-
 
 </body>
 </html>
 
-
 <script>
-    $(document).on('submit','#mapping-formss',function(e) {
-        e.preventDefault();
-        $("#alert-div").hide();
-        var form_data = new FormData();
-        form_data.append('mapping-file', $('#mapping-file').prop('files')[0]);
-        form_data.append('source-data', $('#source-data').prop('files')[0]);
-        $.ajax({
-                type: 'POST',
-                url: '{{ url_for("index") }}',
-                data: form_data,
-                contentType: false,
-                cache: false,
-                processData: false,
-                success: function(response) {
-                   // if ("html" in response) {
-                       location.href = 'result';
-                       //  document.write(response["html"]);
-                  //  } else {
-                        $("#submit-button").attr("class", "btn btn-primary spinner-button").text("Execute");
-                        $("#alert-message").text(response);
-                        $("#alert-div").show();
-                   // }
-                },
-            });
-    });
-</script>
-<script>
+    // turn button into spinner when pressed
     $(document.body).on('click', '.spinner-button' ,function(e){
           $(this).css("pointer-events", "none");
           $(this).text("");
           $(this).attr("class", "spinner-border");
     });
-</script>
-<script>
+
+    // reset the form if clear button clicked
     $('.clear-button').click(function(){
        $('#mapping-form')[0].reset();
-    });
-</script>
-<script>
-    $(document).ready(function() {
-      // $('#mapping-form')[0].reset();
     });
 </script>
