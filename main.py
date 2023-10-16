@@ -50,7 +50,6 @@ def index():
         # remove the files from server
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
         for file in source_files:
-            pass
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
         # check if any source files defined in mapping were not uploaded
         if file_errors:
@@ -104,7 +103,9 @@ def execute_mapping(mapping_filename):
                 mappings: {mapping_filename}
              """
     output_file = "output.ttl"
-    os.chdir("uploads")
+    # change working directory to allow engine to access uploads
+    if not os.getcwd().endswith("uploads"):
+        os.chdir("uploads")
     results = {}
     # try/catch the execution of the mapping
     try:
@@ -115,7 +116,8 @@ def execute_mapping(mapping_filename):
     except Exception as e:
         results["error_message"] = str(e)
         print(e)
-    os.chdir("..")
+    if os.getcwd().endswith("uploads"):
+        os.chdir("..")
     return results
 
 
