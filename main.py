@@ -121,6 +121,11 @@ def execute_mapping(mapping_filename):
     return results
 
 
+@app.errorhandler(Exception)
+def error(error):
+    print(error)
+    return render_template("error.html")
+
 if __name__ == '__main__':
     # start the web application
     app.run(debug=True, host="127.0.0.1", port=5000, threaded=True)
