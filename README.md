@@ -23,7 +23,7 @@ The interface of the application will run on localhost port 5000 by default [127
 The port can be configured on line 125 of `main.py` by changing the respective variable `app.run(debug=True, host="127.0.0.1", port=5000, threaded=True)`
 
 ### Sample Mappings 
-Sample Mappings and Data sources can be found in the  [Sample-Mappings](./Sample-Mappings) directory. 
+Sample Mappings and Data sources can be found in the  [sample-Mappings](./sample-mappings) directory. 
 
 ### Video Demonstration
 A video demonstration of the application can be found here: [https://drive.google.com/file/d/1IW--40hAaRCww_52P9fTOchVX_u7y7ow/view](https://drive.google.com/file/d/1IW--40hAaRCww_52P9fTOchVX_u7y7ow/view?usp=sharing)
