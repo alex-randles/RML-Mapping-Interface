@@ -8,7 +8,7 @@ The following command can be used to download this repository: `git clone https:
 
 Alternatively, you can download a ZIP file containing the code here: [https://github.com/alex-randles/RML-Mapping-Interface/archive/refs/heads/main.zip](https://github.com/alex-randles/RML-Mapping-Interface/archive/refs/heads/main.zip)
 ### Requirements 
-The `requirements.txt` file contains the three packages which are required to run the application. 
+The `requirements.txt` file contains the four packages which are required to run the application. 
 * [Flask](https://pythonbasics.org/what-is-flask-python/): Responsible for hosting the web application. 
 * [RDFLib](https://rdflib.readthedocs.io/en/stable/): Responsible for loading the generated RDF graph. 
 * [Morph-KGC](https://github.com/morph-kgc/morph-kgc): Responsible for executing the RML mapping. 
