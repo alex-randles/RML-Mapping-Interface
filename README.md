@@ -12,6 +12,7 @@ The `requirements.txt` file contains the three packages which are required to ru
 * [Flask](https://pythonbasics.org/what-is-flask-python/): Responsible for hosting the web application. 
 * [RDFLib](https://rdflib.readthedocs.io/en/stable/): Responsible for loading the generated RDF graph. 
 * [Morph-KGC](https://github.com/morph-kgc/morph-kgc): Responsible for executing the RML mapping. 
+* [Werkzeug](https://werkzeug.palletsprojects.com/en/3.0.x/): Responsible for processing file uploads. 
 
 The packages can be installed using the following command: `pip3 install -r requirements.txt` 
 ### Running the Application
