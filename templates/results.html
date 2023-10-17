@@ -47,6 +47,7 @@
 <script>
     // function to download the RDF data shown
     $('#download-button').click(function(){
+        $(this).attr("disabled", true);
         var rdf_data = $("#rdf-data").text();
         var filename = "output.ttl";
         var download_data = 'data:text/plain;charset=utf-8,' + encodeURIComponent(rdf_data);
@@ -55,6 +56,6 @@
               'href': download_data,
               'target': '_blank'
         });
-        $(this).click();
+        $(this).attr("disabled", false);
     });
 </script>
