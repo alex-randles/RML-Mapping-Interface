@@ -1,9 +1,8 @@
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ns1: <http://example.com/> .
+@prefix ns2: <http://xmlns.com/foaf/0.1/> .
 
-<http://example.com/BO> rdfs:label "Bolivia, Plurinational State of"@en,
-        "Estado Plurinacional de Bolivia"@es .
-
-<http://example.com/IE> rdfs:label "Ireland"@en,
-        "Irlanda"@es .
+<http://example.com/10/Venus> a ns2:Person ;
+    ns1:id "10" ;
+    ns2:name "Venus" .
 
 
