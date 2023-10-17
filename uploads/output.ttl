@@ -1,8 +1,0 @@
-@prefix ns1: <http://example.com/> .
-@prefix ns2: <http://xmlns.com/foaf/0.1/> .
-
-<http://example.com/10/Venus> a ns2:Person ;
-    ns1:id "10" ;
-    ns2:name "Venus" .
-
-
