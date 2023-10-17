@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect, g
 from werkzeug.utils import secure_filename
 import morph_kgc
 import rdflib
@@ -9,12 +9,16 @@ import rdflib
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "x633UE2xYRC"
 app.config['UPLOAD_FOLDER'] = "uploads"
+app.config['FILE_COUNT'] = 0
 
 
 # the main endpoint for the interface
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "GET":
+        # make uploads directory if not exists
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
         # returns the initial view displayed
         return render_template("index.html")
     else:
@@ -29,8 +33,16 @@ def index():
         if not mapping_filename.endswith(".ttl"):
             flash('Mapping file must be a Turtle file (.ttl)')
             return redirect(request.url)
+        mapping_file_path = os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename)
+        # check for two files with same name uploaded at same time
+        if os.path.exists(mapping_file_path):
+            # file_count = g.get("file_count", 0)
+            file_count = app.config['FILE_COUNT']
+            mapping_filename = f"{mapping_filename.split('.')[0]}-{file_count}.ttl"
+            mapping_file_path = os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename)
+            app.config['FILE_COUNT'] = file_count + 1
         # save the mapping uploaded
-        mapping_file.save(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
+        mapping_file.save(mapping_file_path)
         files = request.files.getlist("source-data")
         source_files = []
         # save each source file uploaded
@@ -39,10 +51,10 @@ def index():
             if source_filename:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
                 source_files.append(source_filename)
-        # compare the source files defined in mapping to uploaded files
-        file_errors = compare_mapping_sources(mapping_filename, source_files)
         # execute the mapping and retrieve RDF data and any error messages
         mapping_result = execute_mapping(mapping_filename)
+        # compare the source files defined in mapping to uploaded files
+        file_errors = compare_mapping_sources(mapping_filename, source_files)
         rdf_generated = mapping_result.get("rdf_data")
         mapping_error = mapping_result.get("error_message")
         print(f"RDF Generated: \n {rdf_generated}")
@@ -125,6 +137,7 @@ def execute_mapping(mapping_filename):
 def error(exception):
     print(exception)
     return render_template("error.html")
+
 
 if __name__ == '__main__':
     # start the web application
