@@ -122,8 +122,8 @@ def execute_mapping(mapping_filename):
 
 
 @app.errorhandler(Exception)
-def error(error):
-    print(error)
+def error(exception):
+    print(exception)
     return render_template("error.html")
 
 if __name__ == '__main__':
