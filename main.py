@@ -156,9 +156,6 @@ def execute_mapping(mapping_filename):
         print(e)
     if os.getcwd().endswith("uploads"):
         os.chdir("..")
-    # print(results)
-    # print("printed results......")
-    # exit()
     return results
 
 
