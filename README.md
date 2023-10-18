@@ -1,6 +1,10 @@
 # RML-Mapping-Interface
 An interface which allows RML mappings and associated source data to be executed and resulting RDF data output.
 
+## Online Version 
+An online version of the application is available at the following link: https://rml-mapper.adaptcentre.ie/
+
+## Local Version
 ### Installation Guide
 The following sections cover the installation and running of the application. The application requires `python 3.10` or greater to run.
 ### Downloading Source Code 
@@ -26,4 +30,4 @@ The port can be configured on line 125 of `main.py` by changing the respective v
 Sample Mappings and Data sources can be found in the  [sample-mappings](./sample-mappings) directory. 
 
 ### Video Demonstration
-A video demonstration of the application can be found here: [https://drive.google.com/file/d/1IW--40hAaRCww_52P9fTOchVX_u7y7ow/view](https://drive.google.com/file/d/1IW--40hAaRCww_52P9fTOchVX_u7y7ow/view?usp=sharing)
+A video demonstration of the application can be found here: https://drive.google.com/file/d/1IW--40hAaRCww_52P9fTOchVX_u7y7ow/view?usp=sharing
