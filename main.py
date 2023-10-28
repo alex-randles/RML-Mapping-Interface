@@ -109,27 +109,30 @@ def index():
 def compare_mapping_sources(mapping_filename, uploaded_sources):
     # compares each mapping source to uploaded source files
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename)
-    mapping_graph = rdflib.Graph().parse(file_path, format="ttl")
-    query = """
-    PREFIX rml: <http://semweb.mmlab.be/ns/rml#>
-    SELECT DISTINCT ?sourceName
-    WHERE { 
-        ?subject rml:source ?sourceName . 
-        FILTER(isLiteral(?sourceName)) 
-    }
-    """
-    query_results = mapping_graph.query(query)
-    source_names = []
-    # store source names retrieved from SPARQL query
-    for row in query_results:
-        current_source = str(row.get("sourceName"))
-        source_names.append(current_source)
-    # compare sources from query result to uploaded files
     file_error_message = []
-    for source in source_names:
-        if source not in uploaded_sources:
-            file_error_message.append(source)
-    return file_error_message
+    try:
+        mapping_graph = rdflib.Graph().parse(file_path, format="ttl")
+        query = """
+        PREFIX rml: <http://semweb.mmlab.be/ns/rml#>
+        SELECT DISTINCT ?sourceName
+        WHERE { 
+            ?subject rml:source ?sourceName . 
+            FILTER(isLiteral(?sourceName)) 
+        }
+        """
+        query_results = mapping_graph.query(query)
+        source_names = []
+        # store source names retrieved from SPARQL query
+        for row in query_results:
+            current_source = str(row.get("sourceName"))
+            source_names.append(current_source)
+        # compare sources from query result to uploaded files
+        for source in source_names:
+            if source not in uploaded_sources:
+                file_error_message.append(source)
+        return file_error_message
+    except Exception as e:
+        return file_error_message
 
 
 # run the uploaded mapping
@@ -154,6 +157,7 @@ def execute_mapping(mapping_filename):
     except Exception as e:
         results["error_message"] = str(e)
         print(e)
+        # exit()
     if os.getcwd().endswith("uploads"):
         os.chdir("..")
     return results
