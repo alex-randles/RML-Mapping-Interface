@@ -1,4 +1,4 @@
-Flask==2.2.2
+Flask==2.2.5
 morph_kgc==2.6.3
 rdflib==6.2.0
 Werkzeug==3.0.1
