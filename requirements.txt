@@ -2,3 +2,4 @@ Flask==2.2.2
 morph_kgc==2.6.3
 rdflib==6.2.0
 Werkzeug==2.3.6
+waitress==2.1.2
