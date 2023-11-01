@@ -1,4 +1,5 @@
-# server to run python code on virtual machine
+# waitress server is used to deploy the application on virtual machine 
+# 'pip3 install waitress' can be used to download the package 
 import waitress
 import main
 print("Waitress server running.....")
