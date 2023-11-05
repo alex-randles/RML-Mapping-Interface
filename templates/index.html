@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>RML Mapper - Home</title>
-<!--    import bootstrap and jQuery -->
+    <!--    import bootstrap and jQuery -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='homepage_favicon.ico') }}">
 </head>
 <body>
@@ -48,31 +49,57 @@
         </div>
         <div class="row my-4">
             <div class="col-12">
-                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">Clear Uploads</button>
-                <button type="submit" id="submit-button" class="btn btn-primary spinner-button" style="margin-right:18%;">Execute</button>
+                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">
+                    Clear Uploads
+                </button>
+                <button type="submit" id="submit-button" class="btn btn-primary spinner-button" style="margin-right:4%;">
+                    Execute
+                </button>
+                <button type="button" id="rml-function-button" class="btn btn-secondary btn-sm float-end" style="margin-right:12.2%;">
+                    RML-FNML
+                    <i class="bi bi-info-circle mx-2" title="Python functions can be executed in mappings" data-toggle="tooltip" data-placement="top"></i>
+                </button>
             </div>
         </div>
-</form>
 
-<!--display debugging information depending on error detected by Morph-KGC-->
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-{% for msg in messages %}
-<div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
-    <h3 class="alert-heading fw-normal">Error</h3>
-    {% if "Bad syntax" in msg %}
-    <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
-    {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
-    <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
-    {% elif "No such file" in msg %}
-<!--    <h6>Source data stated below was not uploaded!</h6>-->
-    <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
+        <div class="row" id="rml-function-upload" style="display:none;">
+            <div class="col-12">
+                            <div class="input-group w-75 mx-auto my-2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text btn btn-secondary">
+                        Python Function File (.py)
+                    </span>
+                </div>
+                <input class="form-control" type="file"  name="python-file" id="python-file" accept=".py">
+            </div>
+                <span>
+                    More information on RML-FNML be found here <a href="https://morph-kgc.readthedocs.io/en/latest/documentation/#rml-fnml">Link</a>
+                </span>
+
+
+            </div>
+        </div>
+    </form>
+
+    <!--display debugging information depending on error detected by Morph-KGC-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
+        <h3 class="alert-heading fw-normal">Error</h3>
+        {% if "Bad syntax" in msg %}
+        <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
+        {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
+        <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
+        {% elif "No such file" in msg %}
+        <!--    <h6>Source data stated below was not uploaded!</h6>-->
+        <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
+        {% endif %}
+        <p>{{msg | safe}}</p>
+    </div>
+    {% endfor %}
     {% endif %}
-    <p>{{msg | safe}}</p>
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+    {% endwith %}
 
 </div>
 
@@ -88,6 +115,14 @@
     $('.clear-button').click(function(){
        $('#mapping-form')[0].reset();
     });
+
+    $('#rml-function-button').click(function(){
+       $("#rml-function-upload").toggle();
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>
 
 </body>

@@ -73,6 +73,16 @@ def index():
             if source_filename:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
                 source_files.append(source_filename)
+
+        function_file = request.files.get("python-file")
+        function_filename = secure_filename(function_file.filename)
+        rml_fnml = False
+        if function_filename != "":
+            rml_fnml = True
+        print(function_filename)
+        exit()
+
+
         # execute the mapping and retrieve RDF data and any error messages
         mapping_result = execute_mapping(mapping_filename)
         # compare the source files defined in mapping to uploaded files
@@ -137,27 +147,50 @@ def compare_mapping_sources(mapping_filename, uploaded_sources):
 
 # run the uploaded mapping
 def execute_mapping(mapping_filename):
-    # create the config string and execute the morph kgc engine and save output
-    config = f"""
-                [DataSource1]
-                mappings: {mapping_filename}
-             """
-    output_file = "output.ttl"
     # change working directory to allow engine to access uploads
+    is_rml_star = False
+    results = {}
     if not os.getcwd().endswith("uploads"):
         os.chdir("uploads")
-    results = {}
-    # try/catch the execution of the mapping
-    try:
-        g = morph_kgc.materialize(config)
-        session["count"] += 1
-        with open(output_file, "w") as f:
-            g.serialize(format="turtle", file=f)
+    rml = rdflib.Namespace("http://w3id.org/rml/")
+    asserted_triple_maps = rdflib.Graph().parse(mapping_filename).subjects(rdflib.RDF.type, rml.AssertedTriplesMap)
+    if len(list(asserted_triple_maps)) > 0:
+        is_rml_star = True
+    if not is_rml_star:
+        # create the config string and execute the morph kgc engine and save output
+        config = f"""
+                    [DataSource1]
+                    mappings: {mapping_filename}
+                 """
+        output_file = "output.ttl"
+            # try/catch the execution of the mapping
+        try:
+            g = morph_kgc.materialize(config)
+            session["count"] += 1
+            # with open(output_file, "w") as f:
+            #     g.serialize(format="turtle", file=f)
             results["rdf_data"] = g.serialize(format="turtle").strip()
-    except Exception as e:
-        results["error_message"] = str(e)
-        print(e)
-        # exit()
+        except Exception as e:
+            results["error_message"] = str(e)
+            print(e)
+    else:
+        config = f"""
+[CONFIGURATION]
+output_format=N-QUADS
+[DataSource]
+mappings={mapping_filename}
+"""
+        output_file = "output.nq"
+        try:
+            g_morph = morph_kgc.materialize_set(config)
+            rdf_data = ""
+            for line in g_morph:
+                rdf_data += line + "\n"
+            session["count"] += 1
+            results["rdf_data"] = rdf_data
+        except Exception as e:
+            results["error_message"] = str(e)
+            print(e)
     if os.getcwd().endswith("uploads"):
         os.chdir("..")
     return results
