@@ -49,7 +49,7 @@ def index():
         mapping_filename = secure_filename(mapping_file.filename)
         print(mapping_filename)
         # check mapping is uploaded and is a turtle file
-        if mapping_filename == '':
+        if not mapping_filename:
             flash('Please upload a Mapping File!')
             return redirect(request.url)
         if not mapping_filename.endswith(".ttl"):
@@ -74,17 +74,20 @@ def index():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
                 source_files.append(source_filename)
 
+        is_rml_star = False
+        rml = rdflib.Namespace("http://w3id.org/rml/")
+        asserted_triple_maps = rdflib.Graph().parse(mapping_file_path).subjects(rdflib.RDF.type, rml.AssertedTriplesMap)
+        if len(list(asserted_triple_maps)) > 0:
+            is_rml_star = True
+
         function_file = request.files.get("python-file")
         function_filename = secure_filename(function_file.filename)
-        rml_fnml = False
-        if function_filename != "":
-            rml_fnml = True
-        print(function_filename)
-        exit()
-
-
+        is_rml_fmnl = False
+        if function_filename:
+            function_file.save(os.path.join(app.config['UPLOAD_FOLDER'], function_filename))
+            is_rml_fmnl = True
         # execute the mapping and retrieve RDF data and any error messages
-        mapping_result = execute_mapping(mapping_filename)
+        mapping_result = execute_mapping(mapping_filename, is_rml_star=is_rml_star, is_rml_fmnl=is_rml_fmnl, function_filename=function_filename)
         # compare the source files defined in mapping to uploaded files
         rdf_generated = mapping_result.get("rdf_data")
         mapping_error = mapping_result.get("error_message")
@@ -97,6 +100,8 @@ def index():
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], mapping_filename))
         for file in source_files:
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file))
+        if function_filename:
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], function_filename))
         # check if any source files defined in mapping were not uploaded
         if file_errors:
             # join returned list of source files not uploaded and create a HTML list to display
@@ -113,6 +118,7 @@ def index():
             return redirect(request.referrer)
         print(f"Count: {session.get('count')}")
         return render_template("results.html",
+                               is_rml_star=is_rml_star,
                                rdf_generated=rdf_generated)
 
 
@@ -146,34 +152,30 @@ def compare_mapping_sources(mapping_filename, uploaded_sources):
 
 
 # run the uploaded mapping
-def execute_mapping(mapping_filename):
+def execute_mapping(mapping_filename, is_rml_star=False, is_rml_fmnl=False, function_filename=None):
     # change working directory to allow engine to access uploads
-    is_rml_star = False
     results = {}
     if not os.getcwd().endswith("uploads"):
         os.chdir("uploads")
-    rml = rdflib.Namespace("http://w3id.org/rml/")
-    asserted_triple_maps = rdflib.Graph().parse(mapping_filename).subjects(rdflib.RDF.type, rml.AssertedTriplesMap)
-    if len(list(asserted_triple_maps)) > 0:
-        is_rml_star = True
-    if not is_rml_star:
+    if is_rml_fmnl:
         # create the config string and execute the morph kgc engine and save output
         config = f"""
-                    [DataSource1]
-                    mappings: {mapping_filename}
-                 """
+        [CONFIGURATION]
+        output_format=N-QUADS
+        udfs={function_filename}
+        [DataSource]
+        mappings={mapping_filename}
+        """
         output_file = "output.ttl"
             # try/catch the execution of the mapping
         try:
             g = morph_kgc.materialize(config)
             session["count"] += 1
-            # with open(output_file, "w") as f:
-            #     g.serialize(format="turtle", file=f)
             results["rdf_data"] = g.serialize(format="turtle").strip()
         except Exception as e:
             results["error_message"] = str(e)
             print(e)
-    else:
+    elif is_rml_star:
         config = f"""
 [CONFIGURATION]
 output_format=N-QUADS
@@ -191,6 +193,24 @@ mappings={mapping_filename}
         except Exception as e:
             results["error_message"] = str(e)
             print(e)
+    else:
+        if not is_rml_star:
+            # create the config string and execute the morph kgc engine and save output
+            config = f"""
+                        [DataSource1]
+                        mappings: {mapping_filename}
+                     """
+            output_file = "output.ttl"
+            # try/catch the execution of the mapping
+            try:
+                g = morph_kgc.materialize(config)
+                session["count"] += 1
+                # with open(output_file, "w") as f:
+                #     g.serialize(format="turtle", file=f)
+                results["rdf_data"] = g.serialize(format="turtle").strip()
+            except Exception as e:
+                results["error_message"] = str(e)
+                print(e)
     if os.getcwd().endswith("uploads"):
         os.chdir("..")
     return results

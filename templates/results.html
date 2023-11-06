@@ -31,7 +31,11 @@
         $("#buttons-div").show();
         var download_button = $("#download-button");
         var rdf_data = $("#rdf-data").text();
+        var is_rml_star = '{{is_rml_star}}';
         var filename = "output.ttl";
+        if (is_rml_star == "True") {
+            filename = "output.nq";
+        }
         var download_data = 'data:text/plain;charset=utf-8,' + encodeURIComponent(rdf_data);
         $(download_button).attr({
               'download': filename,

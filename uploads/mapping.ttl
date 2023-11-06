@@ -1,36 +1,35 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rml: <http://w3id.org/rml/> .
-@prefix ex: <http://example/> .
-@prefix : <http://example.org/> .
-@base <http://example.org/> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix morph-kgc: <https://github.com/morph-kgc/morph-kgc/function/built-in.ttl#> .
+@prefix grel: <http://users.ugent.be/~bjdmeest/function/grel.ttl#> .
+@prefix idlab-fn: <http://example.com/idlab/function/> .
 
-:firstTM a rml:AssertedTriplesMap ;
+@base <http://example.com/base/> .
+
+<TriplesMap1>
     rml:logicalSource [
-        rml:source "data.csv";
+        rml:source "student.csv";
         rml:referenceFormulation rml:CSV
     ];
     rml:subjectMap [
-        rml:reference "c1" ;
-        rml:termType rml:BlankNode
+        rml:template "http://example.com/{Name}"
     ];
     rml:predicateObjectMap [
-        rml:predicate ex:p ;
+        rml:predicate foaf:name;
         rml:objectMap [
-            rml:template "http://example/{c2}"
+            rml:functionExecution <#Execution> ;
         ]
     ] .
 
-:secondTM a rml:AssertedTriplesMap ;
-    rml:logicalSource [
-        rml:source "data.csv";
-        rml:referenceFormulation rml:CSV
-    ];
-    rml:subjectMap [
-        rml:quotedTriplesMap :firstTM
-    ];
-    rml:predicateObjectMap [
-        rml:predicate ex:q ;
-        rml:objectMap [
-            rml:reference "c3"
-        ]
-    ] .
+<#Execution>
+    rml:function ex:toUpperCase ;
+    rml:input
+        [
+            rml:parameter grel:valueParam ;
+            rml:inputValueMap [
+                rml:reference "Name" ;
+            ]
+        ] .

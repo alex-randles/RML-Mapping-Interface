@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="row" id="rml-function-upload" style="display:none;">
+        <div class="row" id="rml-function-upload">
             <div class="col-12">
                             <div class="input-group w-75 mx-auto my-2">
                 <div class="input-group-prepend">
@@ -121,8 +121,12 @@
     });
 
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip();
     })
+
+    $(document).ready(function() {
+        $('#rml-function-upload').hide();
+    });
 </script>
 
 </body>
