@@ -74,20 +74,27 @@ def index():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], source_filename))
                 source_files.append(source_filename)
 
-        is_rml_star = False
+        is_rml_star = is_rml_fnml = False
         rml = rdflib.Namespace("http://w3id.org/rml/")
-        asserted_triple_maps = rdflib.Graph().parse(mapping_file_path).subjects(rdflib.RDF.type, rml.AssertedTriplesMap)
+        mapping_graph = rdflib.Graph().parse(mapping_file_path)
+
+        asserted_triple_maps = mapping_graph.subjects(rdflib.RDF.type, rml.AssertedTriplesMap)
         if len(list(asserted_triple_maps)) > 0:
             is_rml_star = True
 
+
+        function_triple_maps = mapping_graph.subjects(rml.function, None)
+        if len(list(function_triple_maps)) > 0:
+            is_rml_fnml = True
+
+
         function_file = request.files.get("python-file")
         function_filename = secure_filename(function_file.filename)
-        is_rml_fmnl = False
         if function_filename:
             function_file.save(os.path.join(app.config['UPLOAD_FOLDER'], function_filename))
-            is_rml_fmnl = True
+
         # execute the mapping and retrieve RDF data and any error messages
-        mapping_result = execute_mapping(mapping_filename, is_rml_star=is_rml_star, is_rml_fmnl=is_rml_fmnl, function_filename=function_filename)
+        mapping_result = execute_mapping(mapping_filename, is_rml_star=is_rml_star, is_rml_fnml=is_rml_fnml, function_filename=function_filename)
         # compare the source files defined in mapping to uploaded files
         rdf_generated = mapping_result.get("rdf_data")
         mapping_error = mapping_result.get("error_message")
@@ -152,12 +159,12 @@ def compare_mapping_sources(mapping_filename, uploaded_sources):
 
 
 # run the uploaded mapping
-def execute_mapping(mapping_filename, is_rml_star=False, is_rml_fmnl=False, function_filename=None):
+def execute_mapping(mapping_filename, is_rml_star=False, is_rml_fnml=False, function_filename=None):
     # change working directory to allow engine to access uploads
     results = {}
     if not os.getcwd().endswith("uploads"):
         os.chdir("uploads")
-    if is_rml_fmnl:
+    if is_rml_fnml:
         # create the config string and execute the morph kgc engine and save output
         config = f"""
         [CONFIGURATION]

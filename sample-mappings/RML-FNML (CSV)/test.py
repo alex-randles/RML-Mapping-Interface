@@ -10,4 +10,5 @@ __email__ = "arenas.guerrero.julian@outlook.com"
     fun_id='http://example.com/toUpperCase',
     text='http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam')
 def to_upper_case(text):
-    return text.upper() * 10
+    text = f"{text} Williams"
+    return text
