@@ -52,7 +52,7 @@
                 <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">
                     Clear Uploads
                 </button>
-                <button type="submit" id="submit-button" class="btn btn-primary spinner-button" style="margin-right:4%;">
+                <button type="submit" id="submit-button" class="btn btn-primary spinner-button">
                     Execute
                 </button>
                 <button type="button" id="rml-function-button" class="btn btn-secondary btn-sm float-end" style="margin-right:12.2%;">
@@ -70,9 +70,9 @@
                         Python Function File (.py)
                     </span>
                     </div>
-                    <input class="form-control" type="file"  name="python-file" id="python-file" accept=".py">
+                    <input class="form-control" type="file"  name="function-file" id="function-file" accept=".py">
                     <div class="input-group-prepend">
-                        <button type="button" class="btn btn-sm btn-secondary py-2" onclick='document.getElementById("python-file").value = ""'>Clear File</button>
+                        <button type="button" class="btn btn-sm btn-secondary py-2" id="clear-function-file">Clear File</button>
                     </div>
                 </div>
                 <span>
@@ -98,7 +98,6 @@
         {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
         <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
         {% elif "No such file" in msg %}
-        <!--    <h6>Source data stated below was not uploaded!</h6>-->
         <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
         {% endif %}
         <p>{{msg | safe}}</p>
@@ -120,6 +119,10 @@
     // reset the form if clear button clicked
     $('.clear-button').click(function(){
        $('#mapping-form')[0].reset();
+    });
+
+    $('#clear-function-file').click(function(){
+       $("#function-file").val("");
     });
 
     $('#rml-function-button').click(function(){

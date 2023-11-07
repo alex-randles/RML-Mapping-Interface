@@ -88,7 +88,7 @@ def index():
             is_rml_fnml = True
 
 
-        function_file = request.files.get("python-file")
+        function_file = request.files.get("function-file")
         function_filename = secure_filename(function_file.filename)
         if function_filename:
             function_file.save(os.path.join(app.config['UPLOAD_FOLDER'], function_filename))
