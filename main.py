@@ -87,7 +87,6 @@ def index():
         if len(list(function_triple_maps)) > 0:
             is_rml_fnml = True
 
-
         function_file = request.files.get("function-file")
         function_filename = secure_filename(function_file.filename)
         if function_filename:

@@ -23,26 +23,10 @@
             rml:functionExecution <#Execution> ;
         ]
     ];
-    rml:predicateObjectMap [
-        rml:predicate ex:id;
-        rml:objectMap [
-            rml:functionExecution <#Execution1> ;
-        ]
-    ]
 .
 
 <#Execution>
     rml:function ex:toUpperCase ;
-    rml:input
-        [
-            rml:parameter grel:valueParam ;
-            rml:inputValueMap [
-                rml:reference "Name" ;
-            ]
-        ] .
-
-<#Execution1>
-    rml:function ex:toLowerCase ;
     rml:input
         [
             rml:parameter grel:valueParam ;
