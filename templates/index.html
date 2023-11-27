@@ -121,6 +121,12 @@
        $('#mapping-form')[0].reset();
     });
 
+    // enable tool tips text
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+
+    // buttons related to uploading RML files
     $('#clear-function-file').click(function(){
        $("#function-file").val("");
     });
@@ -128,10 +134,6 @@
     $('#rml-function-button').click(function(){
        $("#rml-function-upload").toggle();
     });
-
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    })
 
     $(document).ready(function() {
         $('#rml-function-upload').hide();

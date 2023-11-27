@@ -110,7 +110,7 @@ def index():
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], function_filename))
         # check if any source files defined in mapping were not uploaded
         if file_errors:
-            # join returned list of source files not uploaded and create a HTML list to display
+            # join a returned list of source files not uploaded and create a HTML list to display
             file_listing = "<ul>"
             for file_name in file_errors:
                 file_listing += f"<li> {file_name} </li>"
