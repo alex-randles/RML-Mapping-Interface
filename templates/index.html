@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>RML Mapper - Home</title>
-    <!--    import bootstrap and jQuery -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='homepage_favicon.ico') }}">
 </head>
 <body>
-<!--container for upload form fields -->
 <div class="container-fluid">
     <div class="row" style="background-color:#F8F8F8;">
         <h1 class="text-center text-dark mt-2">RML Mapping Engine</h1>
@@ -27,7 +24,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">RML Mapping (.ttl)</span>
                     </div>
-                    <input class="form-control" type="file" name="mapping-file" id="mapping-file" accept=".ttl">
+                    <input class="form-control" type="file" name="mapping-file" id="mapping-file" accept="text/turtle">
                 </div>
             </div>
             <div class="form-group">
@@ -35,7 +32,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text btn btn-secondary">Source Data</span>
                     </div>
-                    <input class="form-control" type="file" name="source-data" id="source-data" accept=".csv, .xlsx, .json, .xml" multiple>
+                    <input class="form-control" type="file" name="source-data" id="source-data" accept="text/csv, application/JSON, text/xml, text/x" multiple>
                 </div>
             </div>
         </div>
@@ -49,96 +46,56 @@
         </div>
         <div class="row my-4">
             <div class="col-12">
-                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">
-                    Clear Uploads
-                </button>
-                <button type="submit" id="submit-button" class="btn btn-primary spinner-button">
-                    Execute
-                </button>
-                <button type="button" id="rml-function-button" class="btn btn-secondary btn-sm float-end" style="margin-right:12.2%;">
-                    RML-FNML
-                    <i class="bi bi-info-circle mx-2" title="Python functions can be executed in mappings" data-toggle="tooltip" data-placement="top"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="row" id="rml-function-upload">
-            <div class="col-12">
-                <div class="input-group w-75 mx-auto my-2">
-                    <div class="input-group-prepend">
-                    <span class="input-group-text btn btn-info">
-                        Python Function File (.py)
-                    </span>
-                    </div>
-                    <input class="form-control" type="file"  name="function-file" id="function-file" accept=".py">
-                    <div class="input-group-prepend">
-                        <button type="button" class="btn btn-sm btn-secondary py-2" id="clear-function-file">Clear File</button>
-                    </div>
-                </div>
-                <span>
-                    A Python file containing a function to execute is required to use RML-FNML
-                    <br>
-                    More information on RML-FNML can be found here:
-                    <a href="https://morph-kgc.readthedocs.io/en/latest/documentation/#rml-fnml" target="_blank">https://morph-kgc.readthedocs.io/en/latest/documentation/#rml-fnml</a>
-                </span>
-
-
+                <button type="button" class="btn btn-secondary btn-sm float-start clear-button" style="margin-left:12.2%;">Clear Uploads</button>
+                <button type="submit" id="submit-button" class="btn btn-primary spinner-button" style="margin-right:18%;">Execute</button>
             </div>
         </div>
     </form>
 
-    <!--display debugging information depending on error detected by Morph-KGC-->
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for msg in messages %}
-    <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
-        <h3 class="alert-heading fw-normal">Error</h3>
-        {% if "Bad syntax" in msg %}
-        <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
-        {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
-        <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
-        {% elif "No such file" in msg %}
-        <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert">
+                    <h3 class="alert-heading fw-normal">Error</h3>
+                    {% if "Bad syntax" in msg %}
+                        <h6>Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
+                    {% elif "'object_map'" == msg or "single positional indexer is out-of-bounds" == msg or "'object'" == msg %}
+                        <h6>Mapping does not follow <a href="https://rml.io/specs/rml/" target="_blank">RML Specification</a></h6>
+                    {% elif "No such file" in msg %}
+                        <h6>One or more of the Data Source Files mentioned in Mapping File have not been Uploaded!</h6>
+                    {% endif %}
+                    <p>{{msg | safe}}</p>
+                </div>
+            {% endfor %}
         {% endif %}
-        <p>{{msg | safe}}</p>
-    </div>
-    {% endfor %}
-    {% endif %}
     {% endwith %}
+
+    <div class="alert alert-danger mt-3 w-50 mx-auto"  role="alert" id="alert-div" style="display:none;">
+        <h3 class="alert-heading fw-normal">Error</h3>
+        <h6 id="alert-message">Incorrect Syntax in Mapping! Validate <a href="http://ttl.summerofcode.be/" target="_blank">Here</a></h6>
+
+    </div>
+
 
 </div>
 
-<script>
-    // turn button into spinner when pressed
-    $(document.body).on('click', '.spinner-button' ,function(e){
-          $(this).css("pointer-events", "none");
-          $(this).text("");
-          $(this).attr("class", "spinner-border");
-    });
 
-    // reset the form if clear button clicked
-    $('.clear-button').click(function(){
-       $('#mapping-form')[0].reset();
-    });
-
-    // enable tool tips text
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    })
-
-    // buttons related to uploading RML files
-    $('#clear-function-file').click(function(){
-       $("#function-file").val("");
-    });
-
-    $('#rml-function-button').click(function(){
-       $("#rml-function-upload").toggle();
-    });
-
-    $(document).ready(function() {
-        $('#rml-function-upload').hide();
-    });
-</script>
+<div class="fixed-bottom text-center">
+    <p>The RML engine used in this application is <a href="https://morph-kgc.readthedocs.io/en/stable/" target="_blank">Morph-KGC v 2.6.3</a></p>
+</div>
 
 </body>
 </html>
+
+
+<script>
+    $('.clear-button').click(function(){
+        $('#mapping-form')[0].reset();
+    });
+
+    $('#submit-button').click(function(){
+        $(this).css("pointer-events", "none");
+        $(this).text("");
+        $(this).attr("class", "spinner-border");
+    });
+</script>
